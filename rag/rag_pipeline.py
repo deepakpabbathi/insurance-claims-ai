@@ -10,7 +10,6 @@ import pandas as pd
 from sqlalchemy import create_engine
 from openai import OpenAI
 from dotenv import load_dotenv
-import streamlit as st
 
 from rag.prompt_builder import build_prompt
 from security.security import validate_sql
@@ -21,26 +20,7 @@ from security.security import validate_sql
 # -----------------------------
 load_dotenv()
 
-
-
-# -----------------------------
-# Lazy OpenAI client
-# -----------------------------
-def get_client():
-    """Create OpenAI client at call time so st.secrets is available."""
-    api_key = os.getenv("OPENAI_API_KEY")
-
-    if not api_key:
-        try:
-            import streamlit as st
-            api_key = st.secrets.get("OPENAI_API_KEY", None)
-        except Exception:
-            pass
-
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY not found in environment or Streamlit secrets.")
-
-    return OpenAI(api_key=api_key)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 # -----------------------------
@@ -147,10 +127,10 @@ Guidelines:
 - Keep the explanation concise (1–2 sentences).
 - Format dollar amounts with $ prefix and 2 decimal places (e.g., $4,512.30).
 - Format percentages with % suffix and 2 decimal places (e.g., 23.50%).
-# - Return plain text only.
-# - Do NOT use markdown.
-# - Do NOT use backticks (`).
-# - Do NOT use code blocks.
+- Return plain text only.
+- Do NOT use markdown.
+- Do NOT use backticks.
+- Do NOT use code blocks.
 
 User Question:
 {question}
@@ -174,7 +154,7 @@ Explanation:
         # Remove ALL backtick variants (inline and block) using regex
         answer = re.sub(r'`+', '', answer)
         answer = answer.strip()
-        
+
         print(repr(answer))
         return answer
 
