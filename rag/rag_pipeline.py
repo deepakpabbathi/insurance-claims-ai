@@ -10,6 +10,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from openai import OpenAI
 from dotenv import load_dotenv
+import streamlit as st
 
 from rag.prompt_builder import build_prompt
 from security.security import validate_sql
@@ -20,7 +21,10 @@ from security.security import validate_sql
 # -----------------------------
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
+api_key = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY", None)
+client = OpenAI(api_key=api_key)
 
 
 # -----------------------------
