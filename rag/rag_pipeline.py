@@ -23,8 +23,24 @@ load_dotenv()
 
 
 
-api_key = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY", None)
-client = OpenAI(api_key=api_key)
+# -----------------------------
+# Lazy OpenAI client
+# -----------------------------
+def get_client():
+    """Create OpenAI client at call time so st.secrets is available."""
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    if not api_key:
+        try:
+            import streamlit as st
+            api_key = st.secrets.get("OPENAI_API_KEY", None)
+        except Exception:
+            pass
+
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY not found in environment or Streamlit secrets.")
+
+    return OpenAI(api_key=api_key)
 
 
 # -----------------------------
