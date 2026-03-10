@@ -11,6 +11,7 @@ Features:
 
 import sys
 import os
+import sqlite3
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -20,12 +21,20 @@ import plotly.express as px
 
 from rag.rag_pipeline import run_query
 
+
+# ------------------------------------------------
 # Auto-create DB if not present (for Streamlit Cloud)
-if not os.path.exists("claims.db"):
-    df = pd.read_excel("data/processed/Cleaned_Processed_Claims_dataset.xlsx")
-    conn = sqlite3.connect("claims.db")
-    df.to_sql("claims", conn, if_exists="replace", index=False)
-    conn.close()
+# ------------------------------------------------
+BASE_DIR   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH    = os.path.join(BASE_DIR, "claims.db")
+EXCEL_PATH = os.path.join(BASE_DIR, "data", "processed", "Cleaned_Processed_Claims_dataset.xlsx")
+
+if not os.path.exists(DB_PATH):
+    if os.path.exists(EXCEL_PATH):
+        df_init = pd.read_excel(EXCEL_PATH)
+        conn_init = sqlite3.connect(DB_PATH)
+        df_init.to_sql("claims", conn_init, if_exists="replace", index=False)
+        conn_init.close()
 # ------------------------------------------------
 # Page configuration
 # ------------------------------------------------
