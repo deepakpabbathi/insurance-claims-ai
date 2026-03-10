@@ -48,24 +48,42 @@ Streamlit UI
 insurance_claims_ai/
 │
 ├── app/
-│   └── streamlit_app.py          # Streamlit web interface
+│   ├── __init__.py
+│   └── streamlit_app.py                           # Streamlit web interface
 │
 ├── rag/
-│   ├── rag_pipeline.py           # Core Text-to-SQL pipeline
-│   ├── prompt_builder.py         # Prompt engineering
-│   └── schema.py                 # Database schema definitions
+│   ├── __init__.py
+│   ├── rag_pipeline.py                            # Core Text-to-SQL pipeline
+│   ├── prompt_builder.py                          # Prompt engineering
+│   └── schema.py                                  # Database schema definitions
 │
 ├── security/
-│   └── security.py               # SQL validation & injection prevention
+│   ├── __init__.py
+│   └── security.py                                # SQL validation & injection prevention
 │
 ├── preprocessing/
-│   └── Claims_Preprocessing.ipynb  # Data cleaning notebook
+│   └── Claims_Preprocessing.ipynb                 # Data cleaning notebook
 │
-├── database_setup.py             # Creates claims.db from cleaned data
-├── claims.db                     # SQLite database
+├── database/
+│   └── database_setup.py                          # Creates claims.db from cleaned data
+│
+├── data/
+│   ├── raw/
+│   │   └── Claims_raw_dataset.xlsx                # Original raw dataset
+│   └── processed/
+│       └── Cleaned_Processed_Claims_dataset.xlsx  # Cleaned dataset
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_open_ai.py                            # Tests for OpenAI API integration
+│   ├── test_prompt_sql.py                         # Tests for prompt-to-SQL generation
+│   ├── test_queries.py                            # Tests for sample query execution
+│   └── test_rag.py                                # Tests for end-to-end RAG pipeline
+│
+├── claims.db                                      # SQLite database (auto-generated)
 ├── requirements.txt
 ├── README.md
-└── .env                          # API keys (not committed)
+└── .env                                           # API keys (not committed)
 ```
 
 ---
@@ -89,7 +107,7 @@ OPENAI_API_KEY=your_api_key_here
 ### Step 3 — Create the database
 
 ```bash
-python database_setup.py
+python database/database_setup.py
 ```
 
 This creates `claims.db` with the `claims` table from the cleaned dataset.
@@ -111,11 +129,12 @@ http://localhost:8501
 ## Key Components
 
 ### 1. Data Preprocessing
-Raw claims data is cleaned and transformed using a Jupyter notebook. Key steps include handling missing values, standardizing categorical fields, cleaning hospital and repair cost columns, and preparing structured data for SQL querying.
+Raw claims data is cleaned and transformed using a Jupyter notebook (`preprocessing/Claims_Preprocessing.ipynb`). Key steps include handling missing values, hierarchical imputation of repair costs, and extracting City and State from free-text address fields.
 
-**Output:** `Cleaned_Processed_Claims_dataset.xlsx`
+**Input:** `data/raw/Claims_raw_dataset.xlsx`
+**Output:** `data/processed/Cleaned_Processed_Claims_dataset.xlsx`
 
-### 2. RAG Pipeline (`rag_pipeline.py`)
+### 2. RAG Pipeline (`rag/rag_pipeline.py`)
 
 | Step | Description |
 |------|-------------|
@@ -131,6 +150,21 @@ Prevents SQL injection and unauthorized database access.
 
 - ✅ Allowed: `SELECT`
 - ❌ Blocked: `DROP`, `DELETE`, `UPDATE`, `INSERT`, `ALTER`
+
+### 4. Tests (`tests/`)
+
+Unit tests covering OpenAI integration, prompt-to-SQL generation, query execution, and the end-to-end RAG pipeline.
+
+```bash
+python -m pytest tests/
+```
+
+| Test File | What It Tests |
+|-----------|--------------|
+| `test_open_ai.py` | Verifies OpenAI API connectivity by sending a simple prompt and printing the response |
+| `test_prompt_sql.py` | Tests `generate_sql()` with a sample question and prints the generated SQL query |
+| `test_queries.py` | Directly executes SQL on `claims.db` to verify query results (e.g. top 5 states by total loss) |
+| `test_rag.py` | Tests the full `run_query()` pipeline — prints generated SQL, query result, and explanation |
 
 ---
 
