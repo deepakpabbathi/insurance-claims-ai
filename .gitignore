@@ -1,0 +1,11 @@
+echo. > .gitignore
+```
+
+Then open `.gitignore` in VS Code and paste:
+```
+.env
+data/raw/
+data/processed/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
