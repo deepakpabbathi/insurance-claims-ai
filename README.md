@@ -1,4 +1,4 @@
-# 🚗 Insurance Claims AI Assistant (RAG-Based Text-to-SQL)
+# VMAA Insurance Claims AI Assistant (RAG-Based Text-to-SQL)
 
 ## Project Overview
 
@@ -47,45 +47,48 @@ Streamlit UI
 ```
 insurance_claims_ai/
 │
+├── .streamlit/
+│   └── config.toml                               # Streamlit theme configuration (dark UI)
+│
 ├── app/
 │   ├── __init__.py
-│   └── streamlit_app.py                           # Streamlit web interface
+│   └── streamlit_app.py                          # Streamlit web interface
 │
 ├── rag/
 │   ├── __init__.py
-│   ├── rag_pipeline.py                            # Core Text-to-SQL pipeline
-│   ├── prompt_builder.py                          # Prompt engineering
-│   └── schema.py                                  # Database schema definitions
+│   ├── rag_pipeline.py                           # Core Text-to-SQL pipeline
+│   ├── prompt_builder.py                         # Prompt engineering
+│   └── schema.py                                 # Database schema definitions
 │
 ├── security/
 │   ├── __init__.py
-│   └── security.py                                # SQL validation & injection prevention
+│   └── security.py                               # SQL validation & injection prevention
 │
 ├── preprocessing/
-│   └── Claims_Preprocessing.ipynb                 # Data cleaning notebook
+│   └── Claims_Preprocessing.ipynb                # Data cleaning notebook
 │
 ├── database/
-│   └── database_setup.py                          # Creates claims.db from cleaned data
+│   └── database_setup.py                         # Creates claims.db from cleaned data
 │
 ├── data/
 │   ├── raw/
-│   │   └── Claims_raw_dataset.xlsx                # Original raw dataset
+│   │   └── Claims_raw_dataset.xlsx               # Original raw dataset
 │   └── processed/
-│       └── Cleaned_Processed_Claims_dataset.xlsx  # Cleaned dataset
+│       └── Cleaned_Processed_Claims_dataset.xlsx # Cleaned dataset
 │
 ├── tests/
 │   ├── __init__.py
-│   ├── test_open_ai.py                            # Tests for OpenAI API integration
-│   ├── test_prompt_sql.py                         # Tests for prompt-to-SQL generation
-│   ├── test_queries.py                            # Tests for sample query execution
-│   └── test_rag.py                                # Tests for end-to-end RAG pipeline
+│   ├── test_open_ai.py                           # Tests for OpenAI API integration
+│   ├── test_prompt_sql.py                        # Tests for prompt-to-SQL generation
+│   ├── test_queries.py                           # Tests for sample query execution
+│   └── test_rag.py                               # Tests for end-to-end RAG pipeline
 │
-├── claims.db                                      # SQLite database (auto-generated)
+├── claims.db                                     # SQLite database (auto-generated)
 ├── requirements.txt
 ├── README.md
-├── Preprocessing_Approach.md                      # Data preprocessing decisions & approach log
-├── Testing_Validation_Report.docx                 # Testing & validation report for all 9 queries
-└── .env                                           # API keys (not committed)
+├── Preprocessing_Approach.md                     # Data preprocessing decisions & approach log
+├── Testing_Validation_Report.docx                # Testing & validation report for all 9 queries
+└── .env                                          # API keys (not committed)
 ```
 
 ---
@@ -148,7 +151,8 @@ http://localhost:8501
 ## Key Components
 
 ### 1. Data Preprocessing
-Raw claims data is cleaned and transformed using a Jupyter notebook (`preprocessing/Claims_Preprocessing.ipynb`). Key steps include checking for datatype conversion,imputation ,standardization and extracting City and State from free-text address fields.
+Raw claims data is cleaned and transformed using a Jupyter notebook (`preprocessing/Claims_Preprocessing.ipynb`). Key steps include checking datatype conversions, imputation, standardization,
+and extracting City and State from free-text address fields.
 
 **Input:** `data/raw/Claims_raw_dataset.xlsx`
 **Output:** `data/processed/Cleaned_Processed_Claims_dataset.xlsx`
@@ -205,7 +209,8 @@ python -m pytest tests/
 
 ## Visualizations
 
-The app automatically generates charts based on query results:
+The dashboard automatically generates visualizations based on query results.
+Charts are dynamically selected depending on the result structure:
 
 - **Metric cards** — for single-row aggregate results
 - **Pie charts** — for small category distributions (≤10 groups)
@@ -221,10 +226,16 @@ Libraries used: Plotly, Pandas, Streamlit
 | Scenario | Behavior |
 |----------|----------|
 | Empty query | Returns warning message |
-| Invalid SQL generation | Handled safely with error message |
-| SQL injection attempts | Blocked by security layer |
-| Query returning no results | Displays "No results found" |
+| Gibberish / meaningless input | Rejected before API call via `is_meaningful()` check |
 | Query too long (>300 chars) | Rejected with length validation |
+| Out-of-domain question (e.g. "cost of mangoes?") | LLM returns `IRRELEVANT_QUESTION` token — blocked with user-friendly message |
+| Dummy SQL (e.g. `SELECT 0`) | Rejected by claims table reference check in `generate_sql()` |
+| Invalid SQL generation | Handled safely with error message |
+| SQL injection attempts | Blocked by security layer (`validate_sql`) |
+| Query returning no results | Displays "No results found" |
+| Large result sets (raw dumps) | Blocked if >100 rows and >5 columns — user prompted to ask a specific question |
+| Token limit on explanation | Result capped at 50 rows before sending to explanation LLM |
+| Missing OpenAI API key | Application raises clear error at startup instead of failing silently at query time |
 | Ambiguous natural language | LLM attempts best-effort SQL mapping |
 
 ---

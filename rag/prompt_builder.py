@@ -10,20 +10,21 @@ from .schema import SCHEMA_DICT, EXAMPLES
 # -----------------------------
 # Build schema dynamically
 # -----------------------------
+
 def build_schema():
-
+    """Converts SCHEMA_DICT into a formatted column listing for the prompt."""
     schema_text = "Table: claims\n\nColumns:\n"
-
     for column, description in SCHEMA_DICT.items():
         schema_text += f'"{column}" - {description}\n'
-
     return schema_text
 
 
 # -----------------------------
 # Generate SQL prompt
 # -----------------------------
+
 def build_prompt(question):
+    """Assembles the full prompt with schema, business rules, SQL rules, and examples."""
 
     schema = build_schema()
 
@@ -67,14 +68,19 @@ LIMIT
 SQL RULES
 ----------
 
-• Use SQLite syntax  
-• Only generate SELECT queries  
-• Use double quotes for columns with spaces  
-• Only use columns listed in the schema  
-• Do NOT invent new columns  
-• Return ONLY the SQL query  
-• Do NOT include explanations  
-• Do NOT include markdown formatting  
+• Use SQLite syntax
+• Only generate SELECT queries
+• Always query FROM the claims table — never generate SELECT without FROM claims
+• Do NOT generate dummy queries like SELECT 0 or SELECT 1
+• Use double quotes for columns with spaces
+• Only use columns listed in the schema
+• Do NOT invent new columns
+• Return ONLY the SQL query
+• Do NOT include explanations
+• Do NOT include markdown formatting
+• If the question is about insurance claims but returns no matching data, still generate the SQL — do NOT return IRRELEVANT_QUESTION
+• IRRELEVANT_QUESTION is only for questions completely unrelated to insurance claims (e.g. food, weather, politics)
+• If the question is gibberish, meaningless, or cannot be answered from the schema, return exactly: IRRELEVANT_QUESTION
 
 
 MULTIPLE METRICS RULE
