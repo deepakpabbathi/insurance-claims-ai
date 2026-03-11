@@ -38,7 +38,7 @@ DATABASE SCHEMA
 BUSINESS RULES
 ---------------
 
-1. Total Loss = "Repair Estimate Cost" + IFNULL("Hospital Cost",0)
+1. Total Loss = IFNULL("Repair Estimate Cost",0) + IFNULL("Hospital Cost",0)
 2. "City" and "State" are separate columns
 
 

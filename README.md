@@ -131,7 +131,7 @@ http://localhost:8501
 ## Key Components
 
 ### 1. Data Preprocessing
-Raw claims data is cleaned and transformed using a Jupyter notebook (`preprocessing/Claims_Preprocessing.ipynb`). Key steps include handling missing values, hierarchical imputation of repair costs, and extracting City and State from free-text address fields.
+Raw claims data is cleaned and transformed using a Jupyter notebook (`preprocessing/Claims_Preprocessing.ipynb`). Key steps include checking for datatype conversion,imputation ,standardization and extracting City and State from free-text address fields.
 
 **Input:** `data/raw/Claims_raw_dataset.xlsx`
 **Output:** `data/processed/Cleaned_Processed_Claims_dataset.xlsx`
