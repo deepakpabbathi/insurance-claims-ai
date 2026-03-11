@@ -83,6 +83,8 @@ insurance_claims_ai/
 ├── claims.db                                      # SQLite database (auto-generated)
 ├── requirements.txt
 ├── README.md
+├── Preprocessing_Approach.md                      # Data preprocessing decisions & approach log
+├── Testing_Validation_Report.docx                 # Testing & validation report for all 9 queries
 └── .env                                           # API keys (not committed)
 ```
 
