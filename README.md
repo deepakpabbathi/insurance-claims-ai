@@ -90,7 +90,7 @@ insurance_claims_ai/
 
 ---
 
-## Getting Started
+## Getting Started (Local Setup)
 
 ### Step 1 — Install dependencies
 
@@ -125,6 +125,23 @@ streamlit run app/streamlit_app.py
 ```
 http://localhost:8501
 ```
+
+---
+
+## 🌐 Live Demo (Cloud)
+
+> **Try it now (no setup required):**
+> 👉 [https://insurance-claims-ai-3p5jha5ubl4mzwcizl93eh.streamlit.app/](https://insurance-claims-ai-3p5jha5ubl4mzwcizl93eh.streamlit.app/)
+
+### Steps to Use the Live App
+
+1. **Open the link** — [https://insurance-claims-ai-3p5jha5ubl4mzwcizl93eh.streamlit.app/](https://insurance-claims-ai-3p5jha5ubl4mzwcizl93eh.streamlit.app/)
+2. **Type a natural language question** in the input box (e.g. *"Which city has the highest average loss?"*)
+3. **Press Enter or click Submit** — the app will generate a SQL query, run it, and return results
+4. **View the results** — a data table, auto-generated chart, and a plain-English explanation will appear
+5. **Try more queries** from the Sample Queries section below, or ask your own!
+
+> ⚠️ The live app requires a valid OpenAI API key configured on the server. If the app is unavailable, follow the **Local Setup** steps above.
 
 ---
 
