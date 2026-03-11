@@ -1,4 +1,4 @@
-from rag_pipeline import run_query
+from rag.rag_pipeline import run_query
 
 question = "Which state has the highest total loss?"
 
